@@ -12,7 +12,26 @@ const AddParcel = () => {
 
   const servicesCenter = useLoaderData();
 
+  //   unique region
+  const uniqueRegions = [...new Set(servicesCenter.map((item) => item.region))];
+
+  //   watch
   const isDocument = watch("parcelType") === "document";
+  const senderRegion = watch("senderRegion");
+  const receiverRegion = watch("receiverRegion");
+
+  //   district by region
+  const getDistrictsByRegion = (region) =>
+    servicesCenter
+      .filter((item) => item.region === region)
+      .map((item) => item.district);
+
+  const senderDistricts = senderRegion
+    ? getDistrictsByRegion(senderRegion)
+    : [];
+  const receiverDistricts = receiverRegion
+    ? getDistrictsByRegion(receiverRegion)
+    : [];
 
   const onSubmit = (data) => {
     console.log("Form Data:", data);
@@ -105,7 +124,7 @@ const AddParcel = () => {
                   label: "Sender Pickup Wire house",
                   name: "senderWarehouse",
                   type: "select",
-                  options: ["Dhaka", "Chattogram"],
+                  options: senderDistricts, // dynamically populated
                   placeholder: "Select Wire house",
                 },
                 {
@@ -160,8 +179,11 @@ const AddParcel = () => {
                   className="select rounded-md border-[#CBD5E1] w-full"
                 >
                   <option value="">Select your region</option>
-                  <option value="Dhaka">Dhaka</option>
-                  <option value="Sylhet">Sylhet</option>
+                  {uniqueRegions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="md:col-span-2">
@@ -196,7 +218,7 @@ const AddParcel = () => {
                   label: "Receiver Delivery Wire house",
                   name: "receiverWarehouse",
                   type: "select",
-                  options: ["Barisal", "Rangpur"],
+                  options: receiverDistricts, // dynamically populated
                   placeholder: "Select Wire house",
                 },
                 {
@@ -251,8 +273,11 @@ const AddParcel = () => {
                   className="select rounded-md border-[#CBD5E1] w-full"
                 >
                   <option value="">Select your region</option>
-                  <option value="Khulna">Khulna</option>
-                  <option value="Rajshahi">Rajshahi</option>
+                  {uniqueRegions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="md:col-span-2">

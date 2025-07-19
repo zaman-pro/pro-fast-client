@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import BangladeshMap from "./BangladeshMap";
 import { useLoaderData } from "react-router";
+import toast from "react-hot-toast";
 
 const Coverage = () => {
   const serviceCenters = useLoaderData(); // ✅ Load all service center data (from loader)
@@ -20,7 +21,7 @@ const Coverage = () => {
     if (match) {
       setSearchTarget(match); // ✅ If found, update focus
     } else {
-      alert("District not found!"); // ✅ Notify if no match
+      toast.error("District not found!"); // ✅ Notify if no match
     }
   };
 
