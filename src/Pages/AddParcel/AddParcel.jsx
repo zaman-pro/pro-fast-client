@@ -1,14 +1,26 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useLoaderData } from "react-router";
+import useAuth from "../../hooks/useAuth";
+
+const generateTrackingID = () => {
+  const date = new Date();
+  const datePart = date.toISOString().split("T")[0].replace(/-/g, "");
+  const rand = Math.random().toString(36).substring(2, 7).toUpperCase();
+  return `PCL-${datePart}-${rand}`;
+};
 
 const AddParcel = () => {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm();
+
+  const { user } = useAuth();
 
   const servicesCenter = useLoaderData();
 
@@ -16,7 +28,8 @@ const AddParcel = () => {
   const uniqueRegions = [...new Set(servicesCenter.map((item) => item.region))];
 
   //   watch
-  const isDocument = watch("parcelType") === "document";
+  const parcelType = watch("parcelType");
+  const weight = parseFloat(watch("parcelWeight"));
   const senderRegion = watch("senderRegion");
   const receiverRegion = watch("receiverRegion");
 
@@ -33,7 +46,57 @@ const AddParcel = () => {
     ? getDistrictsByRegion(receiverRegion)
     : [];
 
+  // delivery cost
+  const calculateCost = () => {
+    const isSameCity = senderRegion === receiverRegion;
+
+    if (parcelType === "document") {
+      return isSameCity ? 60 : 80;
+    }
+
+    if (weight <= 3) {
+      return isSameCity ? 110 : 150;
+    } else {
+      const extraKg = Math.ceil(weight - 3);
+      const extraCost = extraKg * 40;
+      return isSameCity ? 110 + extraCost : 150 + extraCost + 40;
+    }
+  };
+
+  // Submit handler
   const onSubmit = (data) => {
+    const cost = calculateCost();
+
+    toast.custom((t) => (
+      <div className="bg-white border rounded-xl shadow-xl p-6 text-center space-y-4 w-[300px]">
+        <h3 className="font-bold text-lg">Confirm Delivery</h3>
+        <p className="text-sm">
+          Total Delivery Cost: <strong>৳{cost}</strong>
+        </p>
+        <button
+          className="btn btn-sm bg-[#0AB010] text-white rounded-full px-6"
+          onClick={() => {
+            const parcelData = {
+              ...data,
+              cost,
+              created_by: user?.email,
+              payment_status: "unpaid",
+              delivery_status: "not_collected",
+              creation_date: new Date().toISOString(),
+              tracking_id: generateTrackingID(),
+            };
+            // Save to DB (replace this with actual call)
+            console.log("Parcel Saved:", parcelData);
+            toast.dismiss(t.id);
+            toast.success("Parcel Confirmed & Saved!");
+            // reset();
+          }}
+        >
+          Confirm
+        </button>
+      </div>
+    ));
+
     console.log("Form Data:", data);
   };
 
