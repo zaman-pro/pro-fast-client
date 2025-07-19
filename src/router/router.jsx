@@ -27,6 +27,7 @@ export const router = createBrowserRouter([
       {
         path: "add-parcel",
         Component: AddParcel,
+        loader: () => fetch("./serviceCenter.json"),
         hydrateFallbackElement: <h1>Loading...</h1>,
       },
     ],
