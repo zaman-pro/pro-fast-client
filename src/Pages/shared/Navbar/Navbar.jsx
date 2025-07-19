@@ -1,23 +1,30 @@
 import React from "react";
 import { NavLink } from "react-router";
 import ProFastLogo from "../ProFastLogo/ProFastLogo";
+import { FiArrowUpRight } from "react-icons/fi";
 
 const Navbar = () => {
   const navItems = (
     <>
       <li>
-        <NavLink to="/">Home</NavLink>
+        <NavLink to="/">Services</NavLink>
       </li>
       <li>
         <NavLink to="/coverage">Coverage</NavLink>
       </li>
       <li>
-        <NavLink to="/about">About</NavLink>
+        <NavLink to="/about-us">About Us</NavLink>
+      </li>
+      <li>
+        <NavLink to="/add-parcel">Add Parcel</NavLink>
+      </li>
+      <li>
+        <NavLink to="/be-a-rider">Be a Rider</NavLink>
       </li>
     </>
   );
   return (
-    <div className="navbar bg-base-100 shadow-sm">
+    <div className="navbar bg-base-100 px-8 py-5 border rounded-2xl border-[#DADADA] mt-8">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -50,7 +57,15 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{navItems}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        <a className="btn btn-outline mr-4 rounded-xl px-8 py-6 font-bold text-xl text-[#606060] border-[#DADADA]">
+          Sign In
+        </a>
+        <a className="btn bg-[#CAEB66] rounded-xl px-8 py-6 font-bold text-xl text-[#1F1F1F]">
+          Be a rider
+        </a>
+        <a className="bg-[#1F1F1F] rounded-full text-[#CAEB66] p-3">
+          <FiArrowUpRight size={32} />
+        </a>
       </div>
     </div>
   );

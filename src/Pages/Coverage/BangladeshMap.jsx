@@ -4,13 +4,16 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 
-const defaultPosition = [23.8103, 90.4125]; // Dhaka
+// ✅ Default position (center of Bangladesh - Dhaka)
+const defaultPosition = [23.8103, 90.4125];
 
+// ✅ Component to fly to selected district
 const FlyToDistrict = ({ focus }) => {
   const map = useMap();
 
   useEffect(() => {
     if (focus) {
+      // ✅ Smoothly move to selected district location
       map.flyTo([focus.latitude, focus.longitude], 10, {
         duration: 1.5,
       });
@@ -20,12 +23,13 @@ const FlyToDistrict = ({ focus }) => {
   return null;
 };
 
+// ✅ Main Map Component
 const BangladeshMap = ({ serviceCenters, focus }) => {
-  const markerRefs = useRef({});
+  const markerRefs = useRef({}); // ✅ Store marker references by district name
 
   useEffect(() => {
     if (focus && markerRefs.current[focus.district]) {
-      markerRefs.current[focus.district].openPopup();
+      markerRefs.current[focus.district].openPopup(); // ✅ Auto-open popup of focused district
     }
   }, [focus]);
 
@@ -37,15 +41,16 @@ const BangladeshMap = ({ serviceCenters, focus }) => {
         scrollWheelZoom={false}
         className="w-full h-full"
       >
+        {/* ✅ Base Map Layer from OpenStreetMap */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         />
 
-        {/* Zoom to Focused Marker */}
+        {/* ✅ Zoom and fly to searched district */}
         <FlyToDistrict focus={focus} />
 
-        {/* Render All Markers */}
+        {/* ✅ Render all service center markers */}
         {serviceCenters.map((center, index) => (
           <Marker
             key={index}
@@ -57,6 +62,7 @@ const BangladeshMap = ({ serviceCenters, focus }) => {
             })}
             ref={(ref) => (markerRefs.current[center.district] = ref)}
           >
+            {/* ✅ Marker popup content */}
             <Popup>
               <strong>{center.district}</strong>
               <br />
