@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useLoaderData } from "react-router";
 import useAuth from "../../hooks/useAuth";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const generateTrackingID = () => {
   const date = new Date();
@@ -21,6 +22,7 @@ const AddParcel = () => {
   } = useForm();
 
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   const servicesCenter = useLoaderData();
 
@@ -86,10 +88,20 @@ const AddParcel = () => {
               tracking_id: generateTrackingID(),
             };
             // Save to DB (replace this with actual call)
-            console.log("Parcel Saved:", parcelData);
-            toast.dismiss(t.id);
-            toast.success("Parcel Confirmed & Saved!");
-            // reset();
+
+            axiosSecure
+              .post("/parcels", parcelData)
+              .then((res) => {
+                console.log("Parcel Saved:", res.data);
+
+                if (res.data?.insertedId) {
+                  // todo: redirect to a payment page
+                  toast.dismiss(t.id);
+                  toast.success("Parcel Confirmed & Saved!");
+                  // reset();
+                }
+              })
+              .catch((err) => console.log(err));
           }}
         >
           Confirm
@@ -97,7 +109,7 @@ const AddParcel = () => {
       </div>
     ));
 
-    console.log("Form Data:", data);
+    // console.log("Form Data:", data);
   };
 
   return (
