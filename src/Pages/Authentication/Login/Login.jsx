@@ -1,19 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import GoogleLogin from "../GoogleLogin/GoogleLogin";
+import useAuth from "../../../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const { user, signIn } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      navigate(`${location.state ? location.state : "/"}`);
+    }
+  }, [user, navigate, location.state]);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (data) => {
+    const toastId = "loginToast";
+    toast.dismiss();
+
+    signIn(data.email, data.password)
+      .then(() => {
+        toast.success("Logged in successfully", { id: toastId });
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Login failed. Please try again.", { id: toastId });
+      });
     console.log(data);
   };
 
