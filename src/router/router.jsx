@@ -9,6 +9,7 @@ import Error from "../Pages/Error/Error";
 import AddParcel from "../Pages/AddParcel/AddParcel";
 import DashboardLayout from "../layouts/DashboardLayout";
 import PrivateRoute from "../Routes/PrivateRoute";
+import MyParcels from "../Pages/Dashboard/MyParcels/MyParcels";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "myParcels",
+        Component: MyParcels,
       },
     ],
   },
