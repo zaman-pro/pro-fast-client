@@ -3,11 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
-import { FiEdit, FiEye, FiTrash2, FiX, FiCheck } from "react-icons/fi";
+import { FiTrash2, FiX, FiCheck } from "react-icons/fi";
+import { useNavigate } from "react-router";
 
 const MyParcels = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
+
   const { data: parcels = [], refetch } = useQuery({
     queryKey: ["my-parcels", user?.email],
     queryFn: async () => {
@@ -24,8 +27,9 @@ const MyParcels = () => {
   };
 
   const handlePay = (id) => {
-    console.log("Proceed to payment for", id);
+    // console.log("Proceed to payment for", id);
     // Implement your payment logic
+    navigate(`/dashboard/payment/${id}`);
   };
 
   const handleDelete = (id) => {
@@ -48,7 +52,7 @@ const MyParcels = () => {
             </button>
             <button
               className="btn btn-sm btn-error text-white"
-              onClick={async () => {
+              onClick={() => {
                 toast.dismiss(t.id);
 
                 toast.promise(
