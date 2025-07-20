@@ -2,11 +2,13 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
+import { FiEdit, FiEye, FiTrash2, FiX, FiCheck } from "react-icons/fi";
 
 const MyParcels = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const { data: parcels = [] } = useQuery({
+  const { data: parcels = [], refetch } = useQuery({
     queryKey: ["my-parcels", user?.email],
     queryFn: async () => {
       const res = await axiosSecure(`/parcels?email=${user.email}`);
@@ -26,7 +28,56 @@ const MyParcels = () => {
     // Implement your payment logic
   };
 
-  const handleDelete = async (id) => {};
+  const handleDelete = (id) => {
+    toast.dismiss();
+    toast(
+      (t) => (
+        <div className="text-sm max-w-xs">
+          <div className="flex items-center gap-3 mb-2">
+            <FiTrash2 className="text-2xl text-error" />
+            <p>
+              Are you sure you want to <b>delete</b> this parcel?
+            </p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              className="btn btn-sm btn-outline btn-secondary"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              <FiX size={16} /> Cancel
+            </button>
+            <button
+              className="btn btn-sm btn-error text-white"
+              onClick={async () => {
+                toast.dismiss(t.id);
+
+                toast.promise(
+                  axiosSecure.delete(`/parcels/${id}`),
+                  {
+                    loading: "Deleting parcel...",
+                    success: () => {
+                      refetch();
+                      return "Parcel deleted successfully!";
+                    },
+                    error: "Failed to delete parcel.",
+                  },
+                  {
+                    id: `delete-progress-${id}`,
+                  }
+                );
+              }}
+            >
+              <FiCheck size={16} /> Confirm
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        id: `delete-confirm-${id}`,
+        duration: 4000,
+      }
+    );
+  };
 
   const formatDate = (iso) => {
     return new Date(iso).toLocaleString();
